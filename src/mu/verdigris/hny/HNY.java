@@ -98,6 +98,7 @@ public class HNY extends Activity
             final NumberPicker np = (NumberPicker)this.findViewById(id);
             np.setMinValue(1);
             np.setMaxValue(3);
+            np.setValue(1);
             this.np.add(np);
         }
     }
