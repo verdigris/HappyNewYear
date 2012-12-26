@@ -18,7 +18,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-public class HNY extends Activity {
+public class HNY extends Activity
+    implements SoundPool.OnLoadCompleteListener {
 
     private static final String TAG = "HNY";
     private View.OnClickListener btnListener;
@@ -39,6 +40,7 @@ public class HNY extends Activity {
         this.that = this;
         this.rnd = new Random();
         this.sp = new SoundPool(16, AudioManager.STREAM_MUSIC, 0);
+        this.sp.setOnLoadCompleteListener(this);
         this.runSeq = false;
 
         try {
@@ -54,6 +56,7 @@ public class HNY extends Activity {
 
                     if (HNY.this.seq != null) {
                         try {
+                            /* Note: That's not so great... */
                             HNY.this.seq.join();
                         } catch (InterruptedException e) {
                             log("Oops: " + e.getMessage());
@@ -77,6 +80,10 @@ public class HNY extends Activity {
     protected void onDestroy() {
         this.sp.release();
         super.onDestroy();
+    }
+
+    public void onLoadComplete(SoundPool sp, int sampleId, int status) {
+        log("loaded: " + sampleId + ", status: " + status);
     }
 
     private void buildSnd()
