@@ -2,4 +2,7 @@
 <resources>
     <string name="app_name">Happy New Year</string>
     <string name="btn_snd_happy">START / STOP</string>
+    <string name="lbl_voices_happy">HAPPY</string>
+    <string name="lbl_voices_new">NEW</string>
+    <string name="lbl_voices_year">YEAR</string>
 </resources>
