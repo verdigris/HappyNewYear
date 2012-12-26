@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.NumberPicker;
 
 public class HNY extends Activity
     implements SoundPool.OnLoadCompleteListener {
@@ -29,6 +30,7 @@ public class HNY extends Activity
     private Map<String, List<Integer>> snd;
     private Thread seq;
     private boolean runSeq;
+    private List<NumberPicker> np;
 
     /* ToDo: check return value of sp.play (stream id) and report error if 0 */
 
@@ -49,31 +51,8 @@ public class HNY extends Activity
             Log.e(HNY.TAG, "Oops: " + e.getMessage());
         }
 
-        this.btnListener = new View.OnClickListener() {
-                public void onClick(View v) {
-                    HNY.this.runSeq = !HNY.this.runSeq;
-                    log("seq run: " + HNY.this.runSeq);
-
-                    if (HNY.this.seq != null) {
-                        try {
-                            /* Note: That's not so great... */
-                            HNY.this.seq.join();
-                        } catch (InterruptedException e) {
-                            log("Oops: " + e.getMessage());
-                        }
-
-                        HNY.this.seq = null;
-                    }
-
-                    if (HNY.this.runSeq) {
-                        HNY.this.seq = new SequenceThread();
-                        HNY.this.seq.start();
-                    }
-                }
-            };
-
-        ((Button)this.findViewById(R.id.btn_snd_happy))
-            .setOnClickListener(this.btnListener);
+        this.buildNumberPickers();
+        this.buildMainButton();
     }
 
     @Override
@@ -110,6 +89,47 @@ public class HNY extends Activity
         }
     }
 
+    private void buildNumberPickers() {
+        final int npId[] = {
+            R.id.np_voices_happy, R.id.np_voices_new, R.id.np_voices_year };
+        this.np = new ArrayList<NumberPicker>();
+
+        for (int id: npId) {
+            final NumberPicker np = (NumberPicker)this.findViewById(id);
+            np.setMinValue(1);
+            np.setMaxValue(3);
+            this.np.add(np);
+        }
+    }
+
+    private void buildMainButton() {
+        this.btnListener = new View.OnClickListener() {
+                public void onClick(View v) {
+                    HNY.this.runSeq = !HNY.this.runSeq;
+                    log("seq run: " + HNY.this.runSeq);
+
+                    if (HNY.this.seq != null) {
+                        try {
+                            /* Note: That's not so great... */
+                            HNY.this.seq.join();
+                        } catch (InterruptedException e) {
+                            log("Oops: " + e.getMessage());
+                        }
+
+                        HNY.this.seq = null;
+                    }
+
+                    if (HNY.this.runSeq) {
+                        HNY.this.seq = new SequenceThread();
+                        HNY.this.seq.start();
+                    }
+                }
+            };
+
+        ((Button)this.findViewById(R.id.btn_snd_happy))
+            .setOnClickListener(this.btnListener);
+    }
+
     private class SequenceThread extends Thread {
         private void playRandom(String sndName, int n) {
             final List<Integer> sndList = HNY.this.snd.get(sndName);
@@ -137,14 +157,14 @@ public class HNY extends Activity
             log("seq running");
 
             while (HNY.this.runSeq) {
-                this.playRandom("voicehappy", 2);
+                this.playRandom("voicehappy", HNY.this.np.get(0).getValue());
                 this.doSleep(100);
                 sp.play(HNY.this.snd.get("guitar").get(0),
                         0.9f, 0.9f, 1, 0, 1.0f);
                 this.doSleep(750);
-                this.playRandom("voicenew", 1);
+                this.playRandom("voicenew", HNY.this.np.get(1).getValue());
                 this.doSleep(850);
-                this.playRandom("voiceyear", 2);
+                this.playRandom("voiceyear", HNY.this.np.get(2).getValue());
                 this.doSleep(1550);
             }
 
