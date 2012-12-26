@@ -134,24 +134,18 @@ public class HNY extends Activity
     private class SequenceThread extends Thread {
         private void playRandom(String sndName, int n) {
             final List<Integer> sndList = HNY.this.snd.get(sndName);
-            final int id1 = sndList.get(HNY.this.rnd.nextInt(sndList.size()));
-            sp.play(id1, 0.9f, 0.9f, 1, 0, 1.0f);
+            List<Integer> ids;
 
-            if ((n == 1) || (sndList.size() == 1))
-                return;
+            ids = new ArrayList<Integer>();
 
-            int id2;
+            for (int m = 0; m < sndList.size(); ++m)
+                ids.add(sndList.get(m));
 
-            do {
-                id2 = sndList.get(HNY.this.rnd.nextInt(sndList.size()));
-            } while (id2 == id1);
-
-            sp.play(id2, 0.9f, 0.9f, 1, 0, 1.0f);
-        }
-
-        private void playAll(String sndName) {
-            for (int sndId: HNY.this.snd.get(sndName))
-                sp.play(sndId, 0.9f, 0.9f, 1, 0, 1.0f);
+            for (int m = 0; m < n; ++m) {
+                final int id = HNY.this.rnd.nextInt(ids.size());
+                sp.play(ids.get(id), 0.9f, 0.9f, 1, 0, 1.0f);
+                ids.remove(id);
+            }
         }
 
         public void run() {
