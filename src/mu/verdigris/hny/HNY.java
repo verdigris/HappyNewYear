@@ -1,8 +1,8 @@
 package mu.verdigris.hny;
 
-import java.lang.reflect.Field;
 import java.lang.IllegalAccessException;
 import java.lang.InterruptedException;
+import java.lang.reflect.Field;
 import java.lang.Thread;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,14 +24,18 @@ public class HNY extends Activity
     implements SoundPool.OnLoadCompleteListener {
 
     private static final String TAG = "HNY";
+    private static final int IDLE = 0;
+    private static final int RUNNING = 1;
+    private static final int STOPPING = 2;
+    private Handler handler;
     private View.OnClickListener btnListener;
-    private Activity that;
     private Random rnd;
     private SoundPool sp;
     private Map<String, List<Integer>> snd;
     private int sndLoading;
     private Thread seq;
-    private boolean runSeq;
+    private int state;
+    private List<Integer> stateMsg;
     private List<NumberPicker> np;
 
     /* ToDo: check return value of sp.play (stream id) and report error if 0 */
@@ -40,11 +45,10 @@ public class HNY extends Activity
         super.onCreate(savedInstanceState);
 
         this.setContentView(R.layout.main);
-        this.that = this;
+        this.handler = new Handler();
         this.rnd = new Random();
         this.sp = new SoundPool(16, AudioManager.STREAM_MUSIC, 0);
         this.sp.setOnLoadCompleteListener(this);
-        this.runSeq = false;
 
         try {
             this.buildSnd();
@@ -54,7 +58,8 @@ public class HNY extends Activity
 
         this.buildNumberPickers();
         this.buildMainButton();
-    }
+        this.setState(HNY.IDLE);
+   }
 
     @Override
     protected void onDestroy() {
@@ -109,12 +114,24 @@ public class HNY extends Activity
     private void buildMainButton() {
         this.btnListener = new View.OnClickListener() {
                 public void onClick(View v) {
-                    HNY.this.runSeq = !HNY.this.runSeq;
-                    log("seq run: " + HNY.this.runSeq);
+                    synchronized(HNY.this) {
+                        switch (HNY.this.state) {
+                        case HNY.IDLE:
+                            HNY.this.setState(HNY.RUNNING);
+                            break;
+                        case HNY.RUNNING:
+                            HNY.this.setState(HNY.STOPPING);
+                            break;
+                        case HNY.STOPPING:
+                            break;
+                        };
+
+                        if (HNY.this.state != HNY.RUNNING)
+                            return;
+                    }
 
                     if (HNY.this.seq != null) {
                         try {
-                            /* Note: That's not so great... */
                             HNY.this.seq.join();
                         } catch (InterruptedException e) {
                             log("Oops: " + e.getMessage());
@@ -123,18 +140,63 @@ public class HNY extends Activity
                         HNY.this.seq = null;
                     }
 
-                    if (HNY.this.runSeq) {
-                        HNY.this.seq = new SequenceThread();
-                        HNY.this.seq.start();
-                    }
+                    HNY.this.seq = new SequenceThread();
+                    HNY.this.seq.start();
                 }
             };
 
-        ((Button)this.findViewById(R.id.btn_snd_happy))
-            .setOnClickListener(this.btnListener);
+        ((Button)this.findViewById(R.id.btn_snd_happy)).
+            setOnClickListener(this.btnListener);
+    }
+
+    private void setState(int state) {
+        synchronized (this) {
+            log("state: " + this.state + " -> " + state);
+            this.state = state;
+        }
+    }
+
+    private int getState() {
+        int state;
+
+        synchronized (this) {
+            state = this.state;
+        }
+
+        return state;
     }
 
     private class SequenceThread extends Thread {
+        public void run() {
+            while (HNY.this.sndLoading != 0) {
+                log("waiting for sounds to all be loaded...");
+                this.doSleep(100);
+            }
+
+            /* Give the player a bit of time to start up first... */
+            HNY.this.sp.play(HNY.this.snd.get("silence").get(0),
+                             0.0f, 0.0f, 1, 0, 1.0f);
+            this.doSleep(500);
+
+            boolean doRun = true;
+
+            while (doRun) {
+                this.playRandom("voicehappy", HNY.this.np.get(0).getValue());
+                this.doSleep(100);
+                HNY.this.sp.play(HNY.this.snd.get("guitar").get(0),
+                                 0.7f, 0.7f, 1, 0, 1.0f);
+                this.doSleep(750);
+                this.playRandom("voicenew", HNY.this.np.get(1).getValue());
+                this.doSleep(850);
+                this.playRandom("voiceyear", HNY.this.np.get(2).getValue());
+                this.doSleep(1580);
+
+                doRun = (HNY.this.getState() == HNY.RUNNING);
+            }
+
+            HNY.this.setState(HNY.IDLE);
+        }
+
         private void playRandom(String sndName, int n) {
             final List<Integer> sndList = HNY.this.snd.get(sndName);
             List<Integer> ids;
@@ -150,34 +212,6 @@ public class HNY extends Activity
                 sp.play(ids.get(id), bal, (1.0f - bal), 1, 0, 1.0f);
                 ids.remove(id);
             }
-        }
-
-        public void run() {
-            while (HNY.this.sndLoading != 0) {
-                log("waiting for sounds to all be loaded...");
-                this.doSleep(100);
-            }
-
-            log("seq running");
-
-            /* Give the player a bit of time to start up first... */
-            HNY.this.sp.play(HNY.this.snd.get("silence").get(0),
-                             0.0f, 0.0f, 1, 0, 1.0f);
-            this.doSleep(500);
-
-            while (HNY.this.runSeq) {
-                this.playRandom("voicehappy", HNY.this.np.get(0).getValue());
-                this.doSleep(100);
-                HNY.this.sp.play(HNY.this.snd.get("guitar").get(0),
-                                 0.7f, 0.7f, 1, 0, 1.0f);
-                this.doSleep(750);
-                this.playRandom("voicenew", HNY.this.np.get(1).getValue());
-                this.doSleep(850);
-                this.playRandom("voiceyear", HNY.this.np.get(2).getValue());
-                this.doSleep(1580);
-            }
-
-            log("seq done");
         }
 
         private void doSleep(int ms) {
