@@ -101,7 +101,7 @@ public class HNY extends Activity
             final NumberPicker np = (NumberPicker)this.findViewById(id);
             np.setMinValue(1);
             np.setMaxValue(3);
-            np.setValue(1);
+            np.setValue(2);
             this.np.add(np);
         }
     }
@@ -174,7 +174,7 @@ public class HNY extends Activity
                 this.playRandom("voicenew", HNY.this.np.get(1).getValue());
                 this.doSleep(850);
                 this.playRandom("voiceyear", HNY.this.np.get(2).getValue());
-                this.doSleep(1550);
+                this.doSleep(1580);
             }
 
             log("seq done");
