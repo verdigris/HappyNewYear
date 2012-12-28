@@ -110,11 +110,11 @@ public class HNY extends Activity
 
         this.np = new ArrayList<MyNumberPicker>();
 
-        for (int ids[]: npId) {
-            final MyNumberPicker np =
-                new MyNumberPicker(ids[0], ids[1], ids[2], 1, 3, 2);
-            this.np.add(np);
-        }
+        int initValue = 1;
+
+        for (int ids[]: npId)
+            this.np.add(new MyNumberPicker(ids[0], ids[1], ids[2],
+                                           1, 3, initValue++));
     }
 
     private void buildMainButton() {
