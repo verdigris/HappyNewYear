@@ -143,7 +143,8 @@ public class HNY extends Activity
 
             for (int m = 0; m < n; ++m) {
                 final int id = HNY.this.rnd.nextInt(ids.size());
-                sp.play(ids.get(id), 0.9f, 0.9f, 1, 0, 1.0f);
+                final float bal = HNY.this.rnd.nextFloat();
+                sp.play(ids.get(id), bal, (1.0f - bal), 1, 0, 1.0f);
                 ids.remove(id);
             }
         }
@@ -160,7 +161,7 @@ public class HNY extends Activity
                 this.playRandom("voicehappy", HNY.this.np.get(0).getValue());
                 this.doSleep(100);
                 HNY.this.sp.play(HNY.this.snd.get("guitar").get(0),
-                                 0.9f, 0.9f, 1, 0, 1.0f);
+                                 0.7f, 0.7f, 1, 0, 1.0f);
                 this.doSleep(750);
                 this.playRandom("voicenew", HNY.this.np.get(1).getValue());
                 this.doSleep(850);
