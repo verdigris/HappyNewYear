@@ -28,6 +28,7 @@ public class HNY extends Activity
     private Random rnd;
     private SoundPool sp;
     private Map<String, List<Integer>> snd;
+    private int sndLoading;
     private Thread seq;
     private boolean runSeq;
     private List<NumberPicker> np;
@@ -62,13 +63,14 @@ public class HNY extends Activity
     }
 
     public void onLoadComplete(SoundPool sp, int sampleId, int status) {
-        log("loaded: " + sampleId + ", status: " + status);
+        this.sndLoading--;
     }
 
     private void buildSnd()
         throws IllegalAccessException {
 
         this.snd = new HashMap<String, List<Integer>>();
+        this.sndLoading = 0;
 
         for (Field f: R.raw.class.getFields()) {
             final String name = f.getName();
@@ -85,6 +87,7 @@ public class HNY extends Activity
                 sndList = this.snd.get(sndPx);
             }
 
+            this.sndLoading++;
             sndList.add(this.sp.load(this, f.getInt(null), 1));
         }
     }
@@ -150,6 +153,11 @@ public class HNY extends Activity
         }
 
         public void run() {
+            while (HNY.this.sndLoading != 0) {
+                log("waiting for sounds to all be loaded...");
+                this.doSleep(100);
+            }
+
             log("seq running");
 
             /* Give the player a bit of time to start up first... */
