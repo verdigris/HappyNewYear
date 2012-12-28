@@ -151,11 +151,16 @@ public class HNY extends Activity
         public void run() {
             log("seq running");
 
+            /* Give the player a bit of time to start up first... */
+            HNY.this.sp.play(HNY.this.snd.get("silence").get(0),
+                             0.0f, 0.0f, 1, 0, 1.0f);
+            this.doSleep(500);
+
             while (HNY.this.runSeq) {
                 this.playRandom("voicehappy", HNY.this.np.get(0).getValue());
                 this.doSleep(100);
-                sp.play(HNY.this.snd.get("guitar").get(0),
-                        0.9f, 0.9f, 1, 0, 1.0f);
+                HNY.this.sp.play(HNY.this.snd.get("guitar").get(0),
+                                 0.9f, 0.9f, 1, 0, 1.0f);
                 this.doSleep(750);
                 this.playRandom("voicenew", HNY.this.np.get(1).getValue());
                 this.doSleep(850);
