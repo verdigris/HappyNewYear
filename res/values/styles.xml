@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <style name="label">
+  <style name="Label">
     <item name="android:layout_width">fill_parent</item>
     <item name="android:layout_height">fill_parent</item>
     <item name="android:gravity">center</item>
+    <item name="android:textSize">20sp</item>
   </style>
-  <style name="PickerButton">
-    <item name="android:layout_width">50px</item>
-    <item name="android:layout_height">50px</item>
+  <style name="Value">
+    <item name="android:layout_width">fill_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:gravity">center</item>
+    <item name="android:textSize">50sp</item>
   </style>
-  <style name="ActionButton">
+  <style name="Pick">
     <item name="android:layout_width">wrap_content</item>
     <item name="android:layout_height">wrap_content</item>
-    <!--<item name="android:textAppearance">@style/TextAppearance.ActionButton</item>-->
   </style>
-<!-- ToDo: Review when making the final graphical appearence
-    <style name="TextAppearance" parent="android:TextAppearance">
-    </style>
-
-    <style name="TextAppearance.ActionButton">
-        <item name="android:textStyle">italic</item>
-    </style>
--->
+  <style name="Pick.Plus">
+    <item name="android:src">@drawable/plus</item>
+  </style>
+  <style name="Pick.Minus">
+    <item name="android:src">@drawable/minus</item>
+  </style>
+  <style name="Control">
+    <item name="android:layout_width">wrap_content</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:gravity">center</item>
+    <item name="android:textSize">30sp</item>
+  </style>
 </resources>
 

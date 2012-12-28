@@ -3,34 +3,48 @@
               android:orientation="vertical"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
+
   <LinearLayout android:orientation="horizontal"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content">
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="5sp">
+
     <LinearLayout android:orientation="vertical"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content">
-      <TextView android:text="@string/lbl_voices_happy" style="@style/label" />
-      <Button android:id="@+id/btn_inc_happy" style="@style/PickerButton" />
-      <TextView android:id="@+id/text_happy" style="@style/label" />
-      <Button android:id="@+id/btn_dec_happy" style="@style/PickerButton" />
+      <TextView android:text="@string/lbl_voices_happy" style="@style/Label" />
+      <ImageButton android:id="@+id/btn_inc_happy" style="@style/Pick.Plus" />
+      <TextView android:id="@+id/text_happy" style="@style/Value" />
+      <ImageButton android:id="@+id/btn_dec_happy" style="@style/Pick.Minus" />
     </LinearLayout>
+
     <LinearLayout android:orientation="vertical"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content">
-      <TextView android:text="@string/lbl_voices_new" style="@style/label" />
-      <Button android:id="@+id/btn_inc_new" style="@style/PickerButton" />
-      <TextView android:id="@+id/text_new" style="@style/label" />
-      <Button android:id="@+id/btn_dec_new" style="@style/PickerButton" />
+      <TextView android:text="@string/lbl_voices_new" style="@style/Label" />
+      <ImageButton android:id="@+id/btn_inc_new" style="@style/Pick.Plus" />
+      <TextView android:id="@+id/text_new" style="@style/Value" />
+      <ImageButton android:id="@+id/btn_dec_new" style="@style/Pick.Minus" />
     </LinearLayout>
+
     <LinearLayout android:orientation="vertical"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content">
-      <TextView android:text="@string/lbl_voices_year" style="@style/label" />
-      <Button android:id="@+id/btn_inc_year" style="@style/PickerButton" />
-      <TextView android:id="@+id/text_year" style="@style/label" />
-      <Button android:id="@+id/btn_dec_year" style="@style/PickerButton" />
+      <TextView android:text="@string/lbl_voices_year" style="@style/Label" />
+      <ImageButton android:id="@+id/btn_inc_year" style="@style/Pick.Plus" />
+      <TextView android:id="@+id/text_year" style="@style/Value" />
+      <ImageButton android:id="@+id/btn_dec_year" style="@style/Pick.Minus" />
     </LinearLayout>
+
   </LinearLayout>
 
-  <Button android:id="@+id/btn_control" style="@style/ActionButton" />
+  <LinearLayout android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="15sp">
+    <Button android:id="@+id/btn_control" style="@style/Control" />
+  </LinearLayout>
+
 </LinearLayout>

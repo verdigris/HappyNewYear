@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class HNY extends Activity
@@ -180,8 +181,8 @@ public class HNY extends Activity
     }
 
     private class MyNumberPicker {
-        private Button btnInc;
-        private Button btnDec;
+        private ImageButton btnInc;
+        private ImageButton btnDec;
         private TextView valueText;
         private View.OnClickListener btnIncListener;
         private View.OnClickListener btnDecListener;
@@ -191,23 +192,21 @@ public class HNY extends Activity
 
         public MyNumberPicker(int btnIncId, int btnDecId, int textId,
                               int min, int max, int init) {
-            this.btnInc = (Button)HNY.this.findViewById(btnIncId);
+            this.btnInc = (ImageButton)HNY.this.findViewById(btnIncId);
             this.btnIncListener = new View.OnClickListener() {
                     public void onClick(View v) {
                         MyNumberPicker.this.inc();
                     }
                 };
             this.btnInc.setOnClickListener(this.btnIncListener);
-            this.btnInc.setText("+");
 
-            this.btnDec = (Button)HNY.this.findViewById(btnDecId);
+            this.btnDec = (ImageButton)HNY.this.findViewById(btnDecId);
             this.btnDecListener = new View.OnClickListener() {
                     public void onClick(View v) {
                         MyNumberPicker.this.dec();
                     }
                 };
             this.btnDec.setOnClickListener(this.btnDecListener);
-            this.btnDec.setText("-");
 
             this.valueText = (TextView)HNY.this.findViewById(textId);
             this.min = min;
