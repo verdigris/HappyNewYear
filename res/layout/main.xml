@@ -29,6 +29,5 @@
     </LinearLayout>
   </LinearLayout>
 
-  <Button android:id="@+id/btn_snd_happy" style="@style/ActionButton"
-          android:text="@string/btn_snd_happy" />
+  <Button android:id="@+id/btn_snd_happy" style="@style/ActionButton" />
 </LinearLayout>

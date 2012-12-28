@@ -27,7 +27,10 @@ public class HNY extends Activity
     private static final int IDLE = 0;
     private static final int RUNNING = 1;
     private static final int STOPPING = 2;
+    private static final int STATE_MSG[] = {
+        R.string.start, R.string.stop, R.string.stopping };
     private Handler handler;
+    private Button btn;
     private View.OnClickListener btnListener;
     private Random rnd;
     private SoundPool sp;
@@ -145,8 +148,8 @@ public class HNY extends Activity
                 }
             };
 
-        ((Button)this.findViewById(R.id.btn_snd_happy)).
-            setOnClickListener(this.btnListener);
+        this.btn = (Button)this.findViewById(R.id.btn_snd_happy);
+        this.btn.setOnClickListener(this.btnListener);
     }
 
     private void setState(int state) {
@@ -154,6 +157,14 @@ public class HNY extends Activity
             log("state: " + this.state + " -> " + state);
             this.state = state;
         }
+
+        this.handler.post(new Runnable() {
+                public void run() {
+                    synchronized (HNY.this) {
+                        HNY.this.btn.setText(HNY.STATE_MSG[HNY.this.state]);
+                    }
+                }
+            });
     }
 
     private int getState() {
