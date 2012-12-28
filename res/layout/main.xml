@@ -10,24 +10,27 @@
               android:layout_width="wrap_content"
               android:layout_height="wrap_content">
       <TextView android:text="@string/lbl_voices_happy" style="@style/label" />
-      <NumberPicker android:id="@+id/np_voices_happy"
-                    style="@style/NumberPicker" />
+      <Button android:id="@+id/btn_inc_happy" style="@style/PickerButton" />
+      <TextView android:id="@+id/text_happy" style="@style/label" />
+      <Button android:id="@+id/btn_dec_happy" style="@style/PickerButton" />
     </LinearLayout>
     <LinearLayout android:orientation="vertical"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content">
       <TextView android:text="@string/lbl_voices_new" style="@style/label" />
-      <NumberPicker android:id="@+id/np_voices_new"
-                    style="@style/NumberPicker" />
+      <Button android:id="@+id/btn_inc_new" style="@style/PickerButton" />
+      <TextView android:id="@+id/text_new" style="@style/label" />
+      <Button android:id="@+id/btn_dec_new" style="@style/PickerButton" />
     </LinearLayout>
     <LinearLayout android:orientation="vertical"
                   android:layout_width="wrap_content"
                   android:layout_height="wrap_content">
       <TextView android:text="@string/lbl_voices_year" style="@style/label" />
-      <NumberPicker android:id="@+id/np_voices_year"
-                    style="@style/NumberPicker" />
+      <Button android:id="@+id/btn_inc_year" style="@style/PickerButton" />
+      <TextView android:id="@+id/text_year" style="@style/label" />
+      <Button android:id="@+id/btn_dec_year" style="@style/PickerButton" />
     </LinearLayout>
   </LinearLayout>
 
-  <Button android:id="@+id/btn_snd_happy" style="@style/ActionButton" />
+  <Button android:id="@+id/btn_control" style="@style/ActionButton" />
 </LinearLayout>

@@ -18,7 +18,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.NumberPicker;
+import android.widget.TextView;
 
 public class HNY extends Activity
     implements SoundPool.OnLoadCompleteListener {
@@ -39,7 +39,7 @@ public class HNY extends Activity
     private Thread seq;
     private int state;
     private List<Integer> stateMsg;
-    private List<NumberPicker> np;
+    private List<MyNumberPicker> np;
 
     /* ToDo: check return value of sp.play (stream id) and report error if 0 */
 
@@ -101,15 +101,17 @@ public class HNY extends Activity
     }
 
     private void buildNumberPickers() {
-        final int npId[] = {
-            R.id.np_voices_happy, R.id.np_voices_new, R.id.np_voices_year };
-        this.np = new ArrayList<NumberPicker>();
+        final int npId[][] = {
+            { R.id.btn_inc_happy, R.id.btn_dec_happy, R.id.text_happy },
+            { R.id.btn_inc_new, R.id.btn_dec_new, R.id.text_new },
+            { R.id.btn_inc_year, R.id.btn_dec_year, R.id.text_year },
+        };
 
-        for (int id: npId) {
-            final NumberPicker np = (NumberPicker)this.findViewById(id);
-            np.setMinValue(1);
-            np.setMaxValue(3);
-            np.setValue(2);
+        this.np = new ArrayList<MyNumberPicker>();
+
+        for (int ids[]: npId) {
+            final MyNumberPicker np =
+                new MyNumberPicker(ids[0], ids[1], ids[2], 1, 3, 2);
             this.np.add(np);
         }
     }
@@ -148,7 +150,7 @@ public class HNY extends Activity
                 }
             };
 
-        this.btn = (Button)this.findViewById(R.id.btn_snd_happy);
+        this.btn = (Button)this.findViewById(R.id.btn_control);
         this.btn.setOnClickListener(this.btnListener);
     }
 
@@ -175,6 +177,69 @@ public class HNY extends Activity
         }
 
         return state;
+    }
+
+    private class MyNumberPicker {
+        private Button btnInc;
+        private Button btnDec;
+        private TextView valueText;
+        private View.OnClickListener btnIncListener;
+        private View.OnClickListener btnDecListener;
+        private int min;
+        private int max;
+        private int value;
+
+        public MyNumberPicker(int btnIncId, int btnDecId, int textId,
+                              int min, int max, int init) {
+            this.btnInc = (Button)HNY.this.findViewById(btnIncId);
+            this.btnIncListener = new View.OnClickListener() {
+                    public void onClick(View v) {
+                        MyNumberPicker.this.inc();
+                    }
+                };
+            this.btnInc.setOnClickListener(this.btnIncListener);
+            this.btnInc.setText("+");
+
+            this.btnDec = (Button)HNY.this.findViewById(btnDecId);
+            this.btnDecListener = new View.OnClickListener() {
+                    public void onClick(View v) {
+                        MyNumberPicker.this.dec();
+                    }
+                };
+            this.btnDec.setOnClickListener(this.btnDecListener);
+            this.btnDec.setText("-");
+
+            this.valueText = (TextView)HNY.this.findViewById(textId);
+            this.min = min;
+            this.max = max;
+            this.setValue(init);
+        }
+
+        public void inc() {
+            this.setValue(this.value + 1);
+        }
+
+        public void dec() {
+            this.setValue(this.value - 1);
+        }
+
+        public void setValue(int value) {
+            if ((value > this.max) || (value < this.min))
+                return;
+
+            this.value = value;
+
+            HNY.this.handler.post(new Runnable() {
+                public void run() {
+                    final Integer value = MyNumberPicker.this.getValue();
+                    MyNumberPicker.this.valueText.setText(value.toString());
+                }
+                });
+        }
+
+        public int getValue() {
+            return this.value;
+        }
     }
 
     private class SequenceThread extends Thread {
