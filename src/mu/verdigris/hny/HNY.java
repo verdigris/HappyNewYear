@@ -5,7 +5,9 @@ import java.lang.InterruptedException;
 import java.lang.Math;
 import java.lang.reflect.Field;
 import java.lang.Thread;
+import java.nio.CharBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -253,20 +255,32 @@ public class HNY extends Activity
             this.playFirst("silence", 0.0f);
             this.doSleep(500);
 
+            final String arpDm7 = "dfac";
+            final String arpG7 = "gbdf";
+            final String arpC7M = "cegb";
+            final String arpEnd = "edgb";
             boolean doRun = true;
 
             while (doRun) {
-                this.playRandom("voicehappy", HNY.this.np.get(0).getValue());
+                this.playChord("voicehappy", HNY.this.np.get(0).getValue());
                 this.doSleep(100);
                 this.playFirst("guitar", 0.7f);
+                this.playArpeggio("vibes", arpDm7, 188, 3, 0.2f);
+                this.doSleep(180);
+                this.playChord("voicenew", HNY.this.np.get(1).getValue());
+                this.playArpeggio("vibes", arpG7, 94, 4, 0.2f);
+                this.doSleep(450);
+                this.playChord("voiceyear", HNY.this.np.get(2).getValue());
                 this.doSleep(750);
-                this.playRandom("voicenew", HNY.this.np.get(1).getValue());
-                this.doSleep(850);
-                this.playRandom("voiceyear", HNY.this.np.get(2).getValue());
-                this.doSleep(1580);
+                this.playArpeggio("vibes", arpC7M, 47, 2, 0.3f);
+                this.doSleep(200);
+                this.playArpeggio("vibes", arpEnd, 188, 2, 0.3f);
+                this.doSleep(80);
 
                 doRun = (HNY.this.getState() == HNY.RUNNING);
             }
+
+            this.playArpeggio("vibes", arpC7M, 94, 4, 0.3f);
 
             HNY.this.setState(HNY.IDLE);
         }
@@ -277,21 +291,47 @@ public class HNY extends Activity
             HNY.this.sp.play(sndId, vol, vol, 1, 0, 1.0f);
         }
 
-        private void playRandom(String sndName, int n) {
+        private void playChord(String sndName, int n, float vol) {
             final Map<String, Integer> sndList = HNY.this.snd.get(sndName);
-            List<String> ids = new ArrayList<String>();
-
-            for (String id: sndList.keySet())
-                ids.add(id);
-
             final int nn = Math.min(n, sndList.size());
+            List<Integer> ids = new ArrayList<Integer>(sndList.values());
 
             for (int m = 0; m < nn; ++m) {
                 final int randId = HNY.this.rnd.nextInt(ids.size());
-                final int sndId = sndList.get(ids.get(randId));
-                final float bal = HNY.this.rnd.nextFloat();
-                sp.play(sndId, bal, (1.0f - bal), 1, 0, 1.0f);
+                final int sndId = ids.get(randId);
+                final float bal = HNY.this.rnd.nextFloat() * vol;
+                sp.play(sndId, bal, (vol - bal), 1, 0, 1.0f);
                 ids.remove(randId);
+            }
+        }
+
+        private void playChord(String sndName, int n) {
+            this.playChord(sndName, n, 1.0f);
+        }
+
+        private void playArpeggio(String sndName, String arp, int t,
+                                  int n, float vol) {
+            final Map<String, Integer> sndList = HNY.this.snd.get(sndName);
+            final int nn = Math.min(n, sndList.size());
+            final float volK = vol / 2;
+            List<Integer> ids = new ArrayList<Integer>();
+
+            for (String label: sndList.keySet()) {
+                final char noteArray[] = {label.charAt(0)};
+                final CharBuffer note = CharBuffer.wrap(noteArray);
+
+                if (arp.contains(note))
+                    ids.add(sndList.get(label));
+            }
+
+            for (int m = 0; m < nn; ++m) {
+                final int randId = HNY.this.rnd.nextInt(ids.size());
+                final int sndId = ids.get(randId);
+                final float noteVol = volK + HNY.this.rnd.nextFloat() * volK;
+                final float bal = HNY.this.rnd.nextFloat() * noteVol;
+                sp.play(sndId, bal, (noteVol - bal), 1, 0, 1.0f);
+                ids.remove(randId);
+                this.doSleep(t);
             }
         }
 
