@@ -2,6 +2,7 @@ package mu.verdigris.hny;
 
 import java.lang.IllegalAccessException;
 import java.lang.InterruptedException;
+import java.lang.Math;
 import java.lang.reflect.Field;
 import java.lang.Thread;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class HNY extends Activity
     private View.OnClickListener btnListener;
     private Random rnd;
     private SoundPool sp;
-    private Map<String, List<Integer>> snd;
+    private Map<String, Map<String, Integer>> snd;
     private int sndLoading;
     private Thread seq;
     private int state;
@@ -78,7 +79,7 @@ public class HNY extends Activity
     private void buildSnd()
         throws IllegalAccessException {
 
-        this.snd = new HashMap<String, List<Integer>>();
+        this.snd = new HashMap<String, Map<String, Integer>>();
         this.sndLoading = 0;
 
         for (Field f: R.raw.class.getFields()) {
@@ -86,18 +87,18 @@ public class HNY extends Activity
             final int split1 = name.indexOf('_') + 1;
             final int split2 = name.indexOf('_', split1);
             final String sndPx = name.substring(split1, split2);
-            List<Integer> sndList;
+            final String sndLabel = name.substring(split2 + 1);
+            Map<String, Integer> sndList;
 
             if (!this.snd.containsKey(sndPx)) {
-                log("sound list: " + sndPx);
-                sndList = new ArrayList<Integer>();
+                sndList = new HashMap<String, Integer>();
                 this.snd.put(sndPx, sndList);
             } else {
                 sndList = this.snd.get(sndPx);
             }
 
             this.sndLoading++;
-            sndList.add(this.sp.load(this, f.getInt(null), 1));
+            sndList.put(sndLabel, this.sp.load(this, f.getInt(null), 1));
         }
     }
 
@@ -249,8 +250,7 @@ public class HNY extends Activity
             }
 
             /* Give the player a bit of time to start up first... */
-            HNY.this.sp.play(HNY.this.snd.get("silence").get(0),
-                             0.0f, 0.0f, 1, 0, 1.0f);
+            this.playFirst("silence", 0.0f);
             this.doSleep(500);
 
             boolean doRun = true;
@@ -258,8 +258,7 @@ public class HNY extends Activity
             while (doRun) {
                 this.playRandom("voicehappy", HNY.this.np.get(0).getValue());
                 this.doSleep(100);
-                HNY.this.sp.play(HNY.this.snd.get("guitar").get(0),
-                                 0.7f, 0.7f, 1, 0, 1.0f);
+                this.playFirst("guitar", 0.7f);
                 this.doSleep(750);
                 this.playRandom("voicenew", HNY.this.np.get(1).getValue());
                 this.doSleep(850);
@@ -272,20 +271,27 @@ public class HNY extends Activity
             HNY.this.setState(HNY.IDLE);
         }
 
+        private void playFirst(String sndName, float vol) {
+            final Map<String, Integer> sndList = HNY.this.snd.get(sndName);
+            final int sndId = sndList.get(sndList.keySet().toArray()[0]);
+            HNY.this.sp.play(sndId, vol, vol, 1, 0, 1.0f);
+        }
+
         private void playRandom(String sndName, int n) {
-            final List<Integer> sndList = HNY.this.snd.get(sndName);
-            List<Integer> ids;
+            final Map<String, Integer> sndList = HNY.this.snd.get(sndName);
+            List<String> ids = new ArrayList<String>();
 
-            ids = new ArrayList<Integer>();
+            for (String id: sndList.keySet())
+                ids.add(id);
 
-            for (int m = 0; m < sndList.size(); ++m)
-                ids.add(sndList.get(m));
+            final int nn = Math.min(n, sndList.size());
 
-            for (int m = 0; m < n; ++m) {
-                final int id = HNY.this.rnd.nextInt(ids.size());
+            for (int m = 0; m < nn; ++m) {
+                final int randId = HNY.this.rnd.nextInt(ids.size());
+                final int sndId = sndList.get(ids.get(randId));
                 final float bal = HNY.this.rnd.nextFloat();
-                sp.play(ids.get(id), bal, (1.0f - bal), 1, 0, 1.0f);
-                ids.remove(id);
+                sp.play(sndId, bal, (1.0f - bal), 1, 0, 1.0f);
+                ids.remove(randId);
             }
         }
 
