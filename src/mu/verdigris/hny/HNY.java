@@ -30,7 +30,7 @@ public class HNY extends Activity
     private static final int RUNNING = 1;
     private static final int STOPPING = 2;
     private static final int STATE_MSG[] = {
-        R.string.start, R.string.stop, R.string.stopping };
+        R.string.play, R.string.stop, R.string.stopping };
     private Handler handler;
     private Button btn;
     private View.OnClickListener btnListener;

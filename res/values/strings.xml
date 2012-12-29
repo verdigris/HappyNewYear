@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Happy New Year</string>
-    <string name="start">START</string>
+    <string name="play">PLAY</string>
     <string name="stop">STOP</string>
     <string name="stopping">Stopping...</string>
     <string name="lbl_voices_happy">HAPPY</string>
