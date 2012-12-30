@@ -33,18 +33,17 @@ public class HNY extends Activity
     private static final int STOPPING = 2;
     private static final int STATE_MSG[] = {
         R.string.play, R.string.stop, R.string.stopping };
+    private Random rnd;
     private Handler handler;
     private Button btn;
     private View.OnClickListener btnListener;
-    private Random rnd;
+    private List<MyNumberPicker> np;
+    private List<VibesButton> vb;
     private SoundPool sp;
     private Map<String, Map<String, Integer>> snd;
     private int sndLoading;
     private Thread seq;
     private int state;
-    private List<Integer> stateMsg;
-    private List<MyNumberPicker> np;
-    private List<VibesButton> vb;
 
     /* ToDo: check return value of sp.play (stream id) and report error if 0 */
 
@@ -53,8 +52,8 @@ public class HNY extends Activity
         super.onCreate(savedInstanceState);
 
         this.setContentView(R.layout.main);
-        this.handler = new Handler();
         this.rnd = new Random();
+        this.handler = new Handler();
         this.sp = new SoundPool(16, AudioManager.STREAM_MUSIC, 0);
         this.sp.setOnLoadCompleteListener(this);
 
@@ -192,7 +191,7 @@ public class HNY extends Activity
     }
 
     private int getState() {
-        int state;
+        final int state;
 
         synchronized (this) {
             state = this.state;
@@ -202,13 +201,13 @@ public class HNY extends Activity
     }
 
     private class MyNumberPicker {
-        private ImageButton btnInc;
-        private ImageButton btnDec;
-        private TextView valueText;
-        private View.OnClickListener btnIncListener;
-        private View.OnClickListener btnDecListener;
-        private int min;
-        private int max;
+        private final ImageButton btnInc;
+        private final ImageButton btnDec;
+        private final TextView valueText;
+        private final View.OnClickListener btnIncListener;
+        private final View.OnClickListener btnDecListener;
+        private final int min;
+        private final int max;
         private int value;
 
         public MyNumberPicker(int btnIncId, int btnDecId, int textId,
@@ -251,8 +250,9 @@ public class HNY extends Activity
 
             HNY.this.handler.post(new Runnable() {
                 public void run() {
-                    final Integer value = MyNumberPicker.this.getValue();
-                    MyNumberPicker.this.valueText.setText(value.toString());
+                    final MyNumberPicker np = MyNumberPicker.this;
+                    final Integer value = np.getValue();
+                    np.valueText.setText(value.toString());
                 }
                 });
         }
@@ -265,8 +265,8 @@ public class HNY extends Activity
     private class VibesButton {
         private static final int IMG_ON = R.drawable.vibes;
         private static final int IMG_OFF = R.drawable.vibes_off;
-        private ImageButton btn;
-        private View.OnClickListener btnListener;
+        private final ImageButton btn;
+        private final View.OnClickListener btnListener;
         boolean status;
 
         public VibesButton(ImageButton btn, boolean initStatus) {
@@ -302,6 +302,11 @@ public class HNY extends Activity
     }
 
     private class SequenceThread extends Thread {
+        private static final String arpDm7 = "dfac";
+        private static final String arpG7 = "gbdf";
+        private static final String arpC7M = "cegb";
+        private static final String arpEnd = "edgb";
+
         public void run() {
             while (HNY.this.sndLoading != 0) {
                 log("waiting for sounds to all be loaded...");
@@ -312,10 +317,6 @@ public class HNY extends Activity
             this.playFirst("silence", 0.0f);
             this.doSleep(500);
 
-            final String arpDm7 = "dfac";
-            final String arpG7 = "gbdf";
-            final String arpC7M = "cegb";
-            final String arpEnd = "edgb";
             boolean doRun = true;
 
             while (doRun) {
