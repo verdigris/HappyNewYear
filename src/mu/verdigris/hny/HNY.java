@@ -44,6 +44,7 @@ public class HNY extends Activity
     private int state;
     private List<Integer> stateMsg;
     private List<MyNumberPicker> np;
+    private List<VibesButton> vb;
 
     /* ToDo: check return value of sp.play (stream id) and report error if 0 */
 
@@ -64,6 +65,7 @@ public class HNY extends Activity
         }
 
         this.buildNumberPickers();
+        this.buildVibesButtons();
         this.buildMainButton();
         this.setState(HNY.IDLE);
    }
@@ -118,6 +120,22 @@ public class HNY extends Activity
         for (int ids[]: npId)
             this.np.add(new MyNumberPicker(ids[0], ids[1], ids[2],
                                            1, 3, initValue++));
+    }
+
+    private void buildVibesButtons() {
+        final int btnId[] = {
+            R.id.btn_vibes_happy, R.id.btn_vibes_new, R.id.btn_vibes_year
+        };
+        final boolean btnStatus[] = {
+            false, false, true
+        };
+
+        this.vb = new ArrayList<VibesButton>();
+
+        for (int i = 0; i < 3; ++i) {
+            final ImageButton btn = (ImageButton)this.findViewById(btnId[i]);
+            this.vb.add(new VibesButton(btn, btnStatus[i]));
+        }
     }
 
     private void buildMainButton() {
@@ -244,6 +262,45 @@ public class HNY extends Activity
         }
     }
 
+    private class VibesButton {
+        private static final int IMG_ON = R.drawable.vibes;
+        private static final int IMG_OFF = R.drawable.vibes_off;
+        private ImageButton btn;
+        private View.OnClickListener btnListener;
+        boolean status;
+
+        public VibesButton(ImageButton btn, boolean initStatus) {
+            this.btn = btn;
+            this.setStatus(initStatus);
+
+            this.btnListener = new View.OnClickListener() {
+                    public void onClick(View v) {
+                        VibesButton.this.toggle();
+                    }
+                };
+            this.btn.setOnClickListener(this.btnListener);
+        }
+
+        synchronized public boolean isOn() {
+            return this.status;
+        }
+
+        synchronized public void toggle() {
+            this.setStatus(!this.status);
+        }
+
+        private void setStatus(boolean status) {
+            this.status = status;
+            HNY.this.handler.post(new Runnable() {
+                    public void run() {
+                        final VibesButton vb = VibesButton.this;
+                        final int img = vb.isOn() ? IMG_ON : IMG_OFF;
+                        vb.btn.setImageResource(img);
+                    }
+                });
+        }
+    }
+
     private class SequenceThread extends Thread {
         public void run() {
             while (HNY.this.sndLoading != 0) {
@@ -265,22 +322,27 @@ public class HNY extends Activity
                 this.playChord("voicehappy", HNY.this.np.get(0).getValue());
                 this.doSleep(100);
                 this.playFirst("guitar", 0.7f);
-                this.playArpeggio("vibes", arpDm7, 188, 3, 0.2f);
+                this.playArpeggio("vibes", arpDm7, 188, 3, 0.2f,
+                                  HNY.this.vb.get(0).isOn());
                 this.doSleep(180);
                 this.playChord("voicenew", HNY.this.np.get(1).getValue());
-                this.playArpeggio("vibes", arpG7, 94, 4, 0.2f);
+                this.playArpeggio("vibes", arpG7, 94, 4, 0.2f,
+                                  HNY.this.vb.get(1).isOn());
                 this.doSleep(450);
                 this.playChord("voiceyear", HNY.this.np.get(2).getValue());
                 this.doSleep(750);
-                this.playArpeggio("vibes", arpC7M, 47, 2, 0.3f);
+                this.playArpeggio("vibes", arpC7M, 47, 2, 0.3f,
+                                  HNY.this.vb.get(2).isOn());
                 this.doSleep(200);
-                this.playArpeggio("vibes", arpEnd, 188, 2, 0.3f);
+                this.playArpeggio("vibes", arpEnd, 188, 2, 0.3f,
+                                  HNY.this.vb.get(2).isOn());
                 this.doSleep(80);
 
                 doRun = (HNY.this.getState() == HNY.RUNNING);
             }
 
-            this.playArpeggio("vibes", arpC7M, 94, 4, 0.3f);
+            if (HNY.this.vb.get(2).isOn())
+                this.playArpeggio("vibes", arpC7M, 94, 4, 0.3f, true);
 
             HNY.this.setState(HNY.IDLE);
         }
@@ -310,10 +372,10 @@ public class HNY extends Activity
         }
 
         private void playArpeggio(String sndName, String arp, int t,
-                                  int n, float vol) {
+                                  int n, float vol, boolean enabled) {
             final Map<String, Integer> sndList = HNY.this.snd.get(sndName);
             final int nn = Math.min(n, sndList.size());
-            final float volK = vol / 2;
+            final float volK = enabled ? (vol / 2) : 0.0f;
             List<Integer> ids = new ArrayList<Integer>();
 
             for (String label: sndList.keySet()) {

@@ -17,6 +17,7 @@
       <ImageButton android:id="@+id/btn_inc_happy" style="@style/Pick.Plus" />
       <TextView android:id="@+id/text_happy" style="@style/Value" />
       <ImageButton android:id="@+id/btn_dec_happy" style="@style/Pick.Minus" />
+      <ImageButton android:id="@+id/btn_vibes_happy" style="@style/Vibes" />
     </LinearLayout>
 
     <LinearLayout android:orientation="vertical"
@@ -26,6 +27,7 @@
       <ImageButton android:id="@+id/btn_inc_new" style="@style/Pick.Plus" />
       <TextView android:id="@+id/text_new" style="@style/Value" />
       <ImageButton android:id="@+id/btn_dec_new" style="@style/Pick.Minus" />
+      <ImageButton android:id="@+id/btn_vibes_new" style="@style/Vibes" />
     </LinearLayout>
 
     <LinearLayout android:orientation="vertical"
@@ -35,6 +37,7 @@
       <ImageButton android:id="@+id/btn_inc_year" style="@style/Pick.Plus" />
       <TextView android:id="@+id/text_year" style="@style/Value" />
       <ImageButton android:id="@+id/btn_dec_year" style="@style/Pick.Minus" />
+      <ImageButton android:id="@+id/btn_vibes_year" style="@style/Vibes" />
     </LinearLayout>
 
   </LinearLayout>
