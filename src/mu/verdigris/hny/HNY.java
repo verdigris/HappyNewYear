@@ -118,7 +118,7 @@ public class HNY extends Activity
 
         for (int ids[]: npId)
             this.np.add(new MyNumberPicker(ids[0], ids[1], ids[2],
-                                           1, 3, initValue++));
+                                           0, 3, initValue++));
     }
 
     private void buildVibesButtons() {
@@ -323,13 +323,13 @@ public class HNY extends Activity
                 this.playChord("voicehappy", HNY.this.np.get(0).getValue());
                 this.doSleep(100);
                 this.playFirst("guitar", 0.7f);
-                this.playArpeggio("vibes", arpDm7, 188, 3, 0.2f,
+                this.playArpeggio("vibes", arpDm7, 188, 2, 0.2f,
                                   HNY.this.vb.get(0).isOn());
-                this.doSleep(180);
+                this.doSleep(370);
                 this.playChord("voicenew", HNY.this.np.get(1).getValue());
-                this.playArpeggio("vibes", arpG7, 94, 4, 0.2f,
+                this.playArpeggio("vibes", arpG7, 94, 3, 0.2f,
                                   HNY.this.vb.get(1).isOn());
-                this.doSleep(450);
+                this.doSleep(550);
                 this.playChord("voiceyear", HNY.this.np.get(2).getValue());
                 this.doSleep(750);
                 this.playArpeggio("vibes", arpC7M, 47, 2, 0.3f,
@@ -337,7 +337,16 @@ public class HNY extends Activity
                 this.doSleep(200);
                 this.playArpeggio("vibes", arpEnd, 188, 2, 0.3f,
                                   HNY.this.vb.get(2).isOn());
-                this.doSleep(80);
+                this.doSleep(100);
+
+                /* Sleep a bit more to compensate the sound pool latency */
+
+                int totalVoices = 0;
+
+                for (HNY.MyNumberPicker np: HNY.this.np)
+                    totalVoices += np.getValue();
+
+                this.doSleep((9 - totalVoices) * 3);
 
                 doRun = (HNY.this.getState() == HNY.RUNNING);
             }
