@@ -1,3 +1,9 @@
+/* HappyNewYear - mu.verdigris.hny.HNY
+   Copyright (C) 2013 Guillaume Tucker
+   This program is released under the terms defined in the GNU General Public
+   Licence v3.  See COPYRIGHT and LICENSE for more details.
+*/
+
 package mu.verdigris.hny;
 
 import java.lang.IllegalAccessException;
