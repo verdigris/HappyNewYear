@@ -14,11 +14,15 @@ import java.util.Map;
 import java.util.Random;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -37,6 +41,8 @@ public class HNY extends Activity
     private Handler handler;
     private Button btn;
     private View.OnClickListener btnListener;
+    private Button infoBtn;
+    private View.OnClickListener infoBtnListener;
     private List<MyNumberPicker> np;
     private List<VibesButton> vb;
     private SoundPool sp;
@@ -44,8 +50,6 @@ public class HNY extends Activity
     private int sndLoading;
     private Thread seq;
     private int state;
-
-    /* ToDo: check return value of sp.play (stream id) and report error if 0 */
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,6 +70,7 @@ public class HNY extends Activity
         this.buildNumberPickers();
         this.buildVibesButtons();
         this.buildMainButton();
+        this.buildInfoButton();
         this.setState(HNY.IDLE);
    }
 
@@ -173,6 +178,43 @@ public class HNY extends Activity
 
         this.btn = (Button)this.findViewById(R.id.btn_control);
         this.btn.setOnClickListener(this.btnListener);
+    }
+
+    private void buildInfoButton() {
+        this.infoBtnListener = new View.OnClickListener() {
+                public void onClick(View v) {
+                    final AlertDialog.Builder builder =
+                        new AlertDialog.Builder(HNY.this);
+                    final LayoutInflater inflater =
+                        HNY.this.getLayoutInflater();
+                    builder.setView(inflater.inflate(R.layout.info, null));
+                    final AlertDialog dialog = builder.create();
+                    dialog.show();
+
+                    final ImageButton linkBtn =
+                        (ImageButton)dialog.findViewById(R.id.info_btn_link);
+                    linkBtn.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                final String url = "http://verdigris.mu/";
+                                final Intent intent =
+                                    new Intent(Intent.ACTION_VIEW);
+                                intent.setData(Uri.parse(url));
+                                startActivity(intent);
+                            }
+                        });
+
+                    final Button closeBtn =
+                        (Button)dialog.findViewById(R.id.btn_info_close);
+                    closeBtn.setOnClickListener(new View.OnClickListener() {
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+                }
+            };
+
+        this.infoBtn = (Button)this.findViewById(R.id.btn_info);
+        this.infoBtn.setOnClickListener(this.infoBtnListener);
     }
 
     private void setState(int state) {

@@ -7,4 +7,11 @@
     <string name="lbl_voices_happy">HAPPY</string>
     <string name="lbl_voices_new">NEW</string>
     <string name="lbl_voices_year">YEAR</string>
+    <string name="info">info</string>
+    <string name="info_title">Happy New Year 2013!</string>
+    <string name="info_about">verdigris.mu website:</string>
+    <string name="info_twitter">Twitter: @verdigrix</string>
+    <string name="info_copyright">Copyright (C) 2013 Guillaume Tucker</string>
+    <string name="info_license">This is free software (GPL v3)</string>
+    <string name="info_btn_close">OK</string>
 </resources>
